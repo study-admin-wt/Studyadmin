@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studypoint — Manual</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --input: #252836;
+      --border: #2d3048;
+      --accent: #6366f1;
+      --accent-h: #818cf8;
+      --success: #22c55e;
+      --error: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .back {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .page-title { font-size: 18px; font-weight: 600; }
+
+    /* Tab bar */
+    .tabs {
+      display: flex;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 13px 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* Page content */
+    .content {
+      padding: 24px 20px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Section panels */
+    .sec { display: none; }
+    .sec.active { display: block; }
+
+    /* Form */
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: var(--input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 100px; }
+
+    /* Buttons */
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: var(--accent-h); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-full { width: 100%; padding: 14px; }
+
+    .btn-red { background: var(--error); }
+    .btn-red:hover { background: #dc2626; }
+
+    /* ID row — input + button side by side */
+    .id-row { display: flex; gap: 10px; }
+    .id-row input { flex: 1; }
+
+    /* Divider */
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* Title preview (delete section) */
+    .preview-box {
+      background: var(--input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .preview-box.show { display: block; }
+    .preview-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .preview-title { font-size: 15px; font-weight: 600; }
+
+    /* Update form — hidden until ID is fetched */
+    #updateForm { display: none; }
+    #updateForm.show { display: block; }
+
+    /* Status message */
+    .status {
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .status.success {
+      background: rgba(34,197,94,.1);
+      border: 1px solid rgba(34,197,94,.3);
+      color: #4ade80;
+      display: block;
+    }
+
+    .status.error {
+      background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.3);
+      color: #f87171;
+      display: block;
+    }
+
+    .status.loading {
+      background: rgba(99,102,241,.1);
+      border: 1px solid rgba(99,102,241,.3);
+      color: var(--accent-h);
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <button class="back" onclick="window.location.href='admin.html'">‹</button>
+    <div class="page-title">Manual</div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('create')">Create</button>
+    <button class="tab"        onclick="switchTab('update')">Update</button>
+    <button class="tab"        onclick="switchTab('delete')">Delete</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ==================== CREATE ==================== -->
+    <div class="sec active" id="sec-create">
+      <div class="field">
+        <label for="c-title">Title *</label>
+        <input type="text" id="c-title" placeholder="e.g. Introduction to DBMS">
+      </div>
+      <div class="field">
+        <label for="c-subject">Subject *</label>
+        <input type="text" id="c-subject" placeholder="e.g. dbms">
+      </div>
+      <div class="field">
+        <label for="c-desc">Description</label>
+        <input type="text" id="c-desc" placeholder="Short 1–2 line overview">
+      </div>
+      <div class="field">
+        <label for="c-content">Content *</label>
+        <textarea id="c-content" rows="6" placeholder="Main body of the note..."></textarea>
+      </div>
+      <div class="field">
+        <label for="c-summary">Summary</label>
+        <textarea id="c-summary" rows="3" placeholder="Key takeaway points..."></textarea>
+      </div>
+      <button class="btn btn-full" onclick="createNote()">Save Note</button>
+      <div class="status" id="c-status"></div>
+    </div>
+
+    <!-- ==================== UPDATE ==================== -->
+    <div class="sec" id="sec-update">
+
+      <!-- Step 1: Enter ID and fetch -->
+      <div class="field">
+        <label>Note ID</label>
+        <div class="id-row">
+          <input type="text" id="u-id" placeholder="Paste note ID here">
+          <button class="btn" onclick="fetchNote()">Fetch</button>
+        </div>
+      </div>
+      <div class="status" id="u-fetch-status"></div>
+
+      <!-- Step 2: Edit fields (shown after fetch) -->
+      <div id="updateForm">
+        <div class="divider"></div>
+        <div class="field">
+          <label for="u-title">Title</label>
+          <input type="text" id="u-title">
+        </div>
+        <div class="field">
+          <label for="u-subject">Subject</label>
+          <input type="text" id="u-subject">
+        </div>
+        <div class="field">
+          <label for="u-desc">Description</label>
+          <input type="text" id="u-desc">
+        </div>
+        <div class="field">
+          <label for="u-content">Content</label>
+          <textarea id="u-content" rows="6"></textarea>
+        </div>
+        <div class="field">
+          <label for="u-summary">Summary</label>
+          <textarea id="u-summary" rows="3"></textarea>
+        </div>
+        <button class="btn btn-full" onclick="updateNote()">Update Note</button>
+        <div class="status" id="u-status"></div>
+      </div>
+    </div>
+
+    <!-- ==================== DELETE ==================== -->
+    <div class="sec" id="sec-delete">
+
+      <!-- Step 1: Enter ID and preview title -->
+      <div class="field">
+        <label>Note ID</label>
+        <div class="id-row">
+          <input type="text" id="d-id" placeholder="Paste note ID here">
+          <button class="btn" onclick="previewDelete()">Preview</button>
+        </div>
+      </div>
+      <div class="status" id="d-fetch-status"></div>
+
+      <!-- Step 2: Title shown + delete button -->
+      <div class="preview-box" id="d-preview">
+        <div class="preview-label">Will delete:</div>
+        <div class="preview-title" id="d-title-text"></div>
+      </div>
+
+      <button class="btn btn-full btn-red" id="d-btn" onclick="deleteNote()" style="display:none">
+        Delete Note
+      </button>
+      <div class="status" id="d-status"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // =============================================
+    // API BASE URL
+    // Change this to your Render backend URL
+    // Example: https://studypoint-backend.onrender.com
+    // =============================================
+    const API_BASE = 'https://your-render-url.onrender.com';
+
+    // Redirect to login if not logged in
+    const token = localStorage.getItem('sp_token');
+    if (!token) window.location.href = 'log.html';
+
+    // Helper: auth headers for protected requests
+    const authHeaders = () => ({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    // Helper: if 401, session expired — go back to login
+    function checkUnauth(status) {
+      if (status === 401) {
+        localStorage.removeItem('sp_token');
+        window.location.href = 'log.html';
+        return true;
+      }
+      return false;
+    }
+
+    // Helper: set a status message
+    function setStatus(id, type, msg) {
+      const el = document.getElementById(id);
+      el.className = `status ${type}`;
+      el.textContent = msg;
+    }
+
+    // Helper: hide a status element
+    function hideStatus(id) {
+      document.getElementById(id).className = 'status';
+    }
+
+    // ---- Tab switching ----
+    const tabNames = ['create', 'update', 'delete'];
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', tabNames[i] === name);
+      });
+      document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+      document.getElementById(`sec-${name}`).classList.add('active');
+    }
+
+    // =============================================
+    // CREATE
+    // POST /api/manual/create
+    // =============================================
+    async function createNote() {
+      const title   = document.getElementById('c-title').value.trim();
+      const subject = document.getElementById('c-subject').value.trim();
+      const desc    = document.getElementById('c-desc').value.trim();
+      const content = document.getElementById('c-content').value.trim();
+      const summary = document.getElementById('c-summary').value.trim();
+
+      if (!title || !subject || !content) {
+        setStatus('c-status', 'error', 'Title, subject, and content are required');
+        return;
+      }
+
+      setStatus('c-status', 'loading', 'Saving...');
+
+      try {
+        const res = await fetch(`${API_BASE}/api/manual/create`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ title, subject, description: desc, content, summary })
+        });
+
+        const data = await res.json();
+        if (checkUnauth(res.status)) return;
+
+        if (data.success) {
+          setStatus('c-status', 'success', `✅ Note created!\nID: ${data.noteId}`);
+          // Clear the form
+          ['c-title','c-subject','c-desc','c-content','c-summary']
+            .forEach(id => document.getElementById(id).value = '');
+        } else {
+          setStatus('c-status', 'error', `❌ ${data.message}`);
+        }
+
+      } catch {
+        setStatus('c-status', 'error', 'Cannot reach server');
+      }
+    }
+
+    // =============================================
+    // UPDATE — Step 1: Fetch note by ID
+    // GET /api/manual/get/:id
+    // Prefills the edit form
+    // =============================================
+    async function fetchNote() {
+      const id = document.getElementById('u-id').value.trim();
+      if (!id) { setStatus('u-fetch-status', 'error', 'Enter a note ID'); return; }
+
+      setStatus('u-fetch-status', 'loading', 'Fetching...');
+      document.getElementById('updateForm').classList.remove('show');
+      hideStatus('u-status');
+
+      try {
+        const res = await fetch(`${API_BASE}/api/manual/get/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        if (checkUnauth(res.status)) return;
+
+        if (data.success) {
+          // Fill all form fields with existing note data
+          document.getElementById('u-title').value   = data.note.title;
+          document.getElementById('u-subject').value = data.note.subject;
+          document.getElementById('u-desc').value    = data.note.description;
+          document.getElementById('u-content').value = data.note.content;
+          document.getElementById('u-summary').value = data.note.summary;
+          document.getElementById('updateForm').classList.add('show');
+          setStatus('u-fetch-status', 'success', 'Note loaded — edit and tap Update');
+        } else {
+          setStatus('u-fetch-status', 'error', `❌ ${data.message}`);
+        }
+
+      } catch {
+        setStatus('u-fetch-status', 'error', 'Cannot reach server');
+      }
+    }
+
+    // =============================================
+    // UPDATE — Step 2: Submit changes
+    // PUT /api/manual/update/:id
+    // =============================================
+    async function updateNote() {
+      const id = document.getElementById('u-id').value.trim();
+
+      const body = {
+        title:       document.getElementById('u-title').value.trim(),
+        subject:     document.getElementById('u-subject').value.trim(),
+        description: document.getElementById('u-desc').value.trim(),
+        content:     document.getElementById('u-content').value.trim(),
+        summary:     document.getElementById('u-summary').value.trim()
+      };
+
+      setStatus('u-status', 'loading', 'Updating...');
+
+      try {
+        const res = await fetch(`${API_BASE}/api/manual/update/${id}`, {
+          method: 'PUT',
+          headers: authHeaders(),
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        if (checkUnauth(res.status)) return;
+
+        if (data.success) {
+          setStatus('u-status', 'success', '✅ Note updated successfully');
+        } else {
+          setStatus('u-status', 'error', `❌ ${data.message}`);
+        }
+
+      } catch {
+        setStatus('u-status', 'error', 'Cannot reach server');
+      }
+    }
+
+    // =============================================
+    // DELETE — Step 1: Preview title before deleting
+    // GET /api/manual/title/:id
+    // =============================================
+    async function previewDelete() {
+      const id = document.getElementById('d-id').value.trim();
+      if (!id) { setStatus('d-fetch-status', 'error', 'Enter a note ID'); return; }
+
+      setStatus('d-fetch-status', 'loading', 'Fetching...');
+      document.getElementById('d-preview').classList.remove('show');
+      document.getElementById('d-btn').style.display = 'none';
+      hideStatus('d-status');
+
+      try {
+        const res = await fetch(`${API_BASE}/api/manual/title/${id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        if (checkUnauth(res.status)) return;
+
+        if (data.success) {
+          document.getElementById('d-title-text').textContent = data.title;
+          document.getElementById('d-preview').classList.add('show');
+          document.getElementById('d-btn').style.display = 'block';
+          hideStatus('d-fetch-status'); // Clear the loading status
+        } else {
+          setStatus('d-fetch-status', 'error', `❌ ${data.message}`);
+        }
+
+      } catch {
+        setStatus('d-fetch-status', 'error', 'Cannot reach server');
+      }
+    }
+
+    // =============================================
+    // DELETE — Step 2: Confirm and delete
+    // DELETE /api/manual/delete/:id
+    // =============================================
+    async function deleteNote() {
+      const id  = document.getElementById('d-id').value.trim();
+      const btn = document.getElementById('d-btn');
+
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+      setStatus('d-status', 'loading', 'Deleting...');
+
+      try {
+        const res = await fetch(`${API_BASE}/api/manual/delete/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        if (checkUnauth(res.status)) return;
+
+        if (data.success) {
+          setStatus('d-status', 'success', `✅ ${data.message}`);
+          // Reset delete section
+          document.getElementById('d-id').value = '';
+          document.getElementById('d-preview').classList.remove('show');
+          document.getElementById('d-btn').style.display = 'none';
+        } else {
+          setStatus('d-status', 'error', `❌ ${data.message}`);
+        }
+
+      } catch {
+        setStatus('d-status', 'error', 'Cannot reach server');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Delete Note';
+      }
+    }
+  </script>
+</body>
+</html>
