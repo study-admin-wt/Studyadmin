@@ -6,359 +6,310 @@
   <title>Studypoint — Generate</title>
   <style>
     :root {
-      --bg: #0f1117;
-      --card: #1a1d27;
-      --input: #252836;
-      --border: #2d3048;
-      --accent: #6366f1;
-      --accent-h: #818cf8;
-      --success: #22c55e;
-      --error: #ef4444;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
+      --bg: #0f1117; --card: #1a1d27; --input: #252836; --border: #2d3048;
+      --accent: #6366f1; --accent-h: #818cf8; --success: #22c55e;
+      --error: #ef4444; --text: #f1f5f9; --muted: #94a3b8;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
-      padding-bottom: 40px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 20px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .back {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 24px;
-      cursor: pointer;
-      line-height: 1;
-      padding: 0;
-    }
-
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; min-height: 100vh; padding-bottom: 40px; }
+    .topbar { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--card); border-bottom: 1px solid var(--border); }
+    .back { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
     .page-title { font-size: 18px; font-weight: 600; }
-
-    .content {
-      padding: 24px 20px;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
+    .tabs { display: flex; background: var(--card); border-bottom: 1px solid var(--border); }
+    .tab { flex: 1; padding: 13px 0; font-size: 14px; font-weight: 500; color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .sec { display: none; }
+    .sec.active { display: block; }
+    .content { padding: 24px 20px; max-width: 480px; margin: 0 auto; }
     .field { margin-bottom: 18px; }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
-
-    input, textarea {
-      width: 100%;
-      background: var(--input);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 13px 14px;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
-    }
-
+    label { display: block; font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+    input, textarea { width: 100%; background: var(--input); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 13px 14px; font-size: 15px; outline: none; transition: border-color 0.2s; font-family: inherit; }
     input:focus, textarea:focus { border-color: var(--accent); }
     textarea { resize: vertical; min-height: 100px; }
-
-    /* Image toggle row */
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .toggle {
-      width: 42px;
-      height: 24px;
-      background: var(--border);
-      border-radius: 99px;
-      border: none;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.2s;
-      flex-shrink: 0;
-    }
-
+    .toggle-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .toggle { width: 42px; height: 24px; background: var(--border); border-radius: 99px; border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
     .toggle.on { background: var(--accent); }
-
-    .toggle::after {
-      content: '';
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      background: #fff;
-      border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: left 0.2s;
-    }
-
+    .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; }
     .toggle.on::after { left: 21px; }
-
     .toggle-label { font-size: 14px; color: var(--muted); }
-
-    /* Image upload area */
     .img-area { display: none; margin-bottom: 18px; }
     .img-area.show { display: block; }
+    .img-pick { background: var(--input); border: 1px dashed var(--border); color: var(--muted); border-radius: 8px; padding: 20px; width: 100%; text-align: center; cursor: pointer; font-size: 14px; }
+    #imgPreview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 10px; display: none; }
+    .btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 15px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--accent-h); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .status { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.5; white-space: pre-line; display: none; }
+    .status.success { background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3); color: #4ade80; display: block; }
+    .status.error   { background: rgba(239,68,68,.1);  border: 1px solid rgba(239,68,68,.3);  color: #f87171; display: block; }
+    .status.loading { background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.3); color: var(--accent-h); display: block; }
 
-    .img-pick {
-      background: var(--input);
-      border: 1px dashed var(--border);
-      color: var(--muted);
-      border-radius: 8px;
-      padding: 20px;
-      width: 100%;
-      text-align: center;
-      cursor: pointer;
-      font-size: 14px;
-      transition: border-color 0.2s;
-    }
+    /* Batch progress */
+    #b-progress { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+    .prog-item { display: flex; align-items: flex-start; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; transition: border-color 0.2s; }
+    .prog-item.success { border-color: rgba(34,197,94,.5); }
+    .prog-item.error   { border-color: rgba(239,68,68,.5); }
+    .prog-item.active  { border-color: var(--accent); }
+    .prog-item.skipped { opacity: 0.45; }
+    .prog-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .prog-info { flex: 1; min-width: 0; }
+    .prog-title { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .prog-msg { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .prog-item.success .prog-msg { color: #4ade80; }
+    .prog-item.error   .prog-msg { color: #f87171; }
+    .prog-item.active  .prog-msg { color: var(--accent-h); }
 
-    .img-pick:hover { border-color: var(--accent); }
-
-    #imgPreview {
-      width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-top: 10px;
-      display: none;
-    }
-
-    /* Generate button */
-    .gen-btn {
-      width: 100%;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 15px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .gen-btn:hover { background: var(--accent-h); }
-    .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    /* Status message */
-    .status {
-      margin-top: 16px;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      line-height: 1.5;
-      display: none;
-    }
-
-    .status.success {
-      background: rgba(34,197,94,.1);
-      border: 1px solid rgba(34,197,94,.3);
-      color: #4ade80;
-      display: block;
-    }
-
-    .status.error {
-      background: rgba(239,68,68,.1);
-      border: 1px solid rgba(239,68,68,.3);
-      color: #f87171;
-      display: block;
-    }
-
-    .status.loading {
-      background: rgba(99,102,241,.1);
-      border: 1px solid rgba(99,102,241,.3);
-      color: var(--accent-h);
-      display: block;
-    }
+    /* Counter bar */
+    .counter { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-top: 14px; font-size: 13px; color: var(--muted); }
+    .counter.show { display: flex; justify-content: space-between; align-items: center; }
+    .cnt-done { color: #4ade80; font-weight: 600; }
+    .cnt-fail { color: #f87171; font-weight: 600; }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <button class="back" onclick="window.location.href='admin.html'">‹</button>
-    <div class="page-title">Generate with AI</div>
-  </div>
 
+<div class="topbar">
+  <button class="back" onclick="window.location.href='admin.html'">&#8249;</button>
+  <div class="page-title">Generate with AI</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('single')">Single</button>
+  <button class="tab"        onclick="switchTab('batch')">Batch</button>
+</div>
+
+<!-- SINGLE -->
+<div class="sec active" id="sec-single">
   <div class="content">
-
     <div class="field">
       <label for="title">Title *</label>
       <input type="text" id="title" placeholder="e.g. Introduction to OOP">
     </div>
-
     <div class="field">
       <label for="subject">Subject *</label>
       <input type="text" id="subject" placeholder="e.g. java">
     </div>
-
     <div class="field">
-      <label for="prompt">Prompt <span style="color:#4b5563">(optional — AI uses title if empty)</span></label>
-      <textarea id="prompt" placeholder="Describe what to include in the notes..."></textarea>
+      <label for="prompt">Prompt <span style="color:#4b5563">(optional)</span></label>
+      <textarea id="prompt" placeholder="Describe what to include..."></textarea>
     </div>
-
-    <!-- Image toggle -->
     <div class="toggle-row">
       <button class="toggle" id="imgToggle" onclick="toggleImg()"></button>
       <span class="toggle-label">Include an image</span>
     </div>
-
-    <!-- Image upload (visible when toggle is on) -->
     <div class="img-area" id="imgArea">
-      <div class="img-pick" onclick="document.getElementById('imgFile').click()">
-        📷 Tap to pick an image
-      </div>
-      <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="onImagePick(this)">
+      <div class="img-pick" onclick="document.getElementById('imgFile').click()">&#128247; Tap to pick image</div>
+      <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="onImgPick(this)">
       <img id="imgPreview" alt="Preview">
     </div>
-
-    <button class="gen-btn" id="genBtn" onclick="generate()">✨ Generate Note</button>
-
-    <div class="status" id="status"></div>
+    <button class="btn" id="genBtn" onclick="generate()">&#10024; Generate Note</button>
+    <div class="status" id="s-status"></div>
   </div>
+</div>
 
-  <script>
-    // =============================================
-    // API BASE URL
-    // Change this to your Render backend URL
-    // Example: https://studypoint-backend.onrender.com
-    // =============================================
-    const API_BASE = 'https://api-callstudy.onrender.com';
+<!-- BATCH -->
+<div class="sec" id="sec-batch">
+  <div class="content">
+    <div class="field">
+      <label for="b-subject">Subject *</label>
+      <input type="text" id="b-subject" placeholder="e.g. java">
+    </div>
+    <div class="field">
+      <label for="b-titles">Titles — one per line *</label>
+      <textarea id="b-titles" rows="9" placeholder="Introduction to OOP&#10;Inheritance&#10;Polymorphism&#10;Abstraction&#10;Encapsulation&#10;Interfaces&#10;Exception Handling"></textarea>
+    </div>
+    <button class="btn" id="b-btn" onclick="batchGenerate()">&#9889; Generate All</button>
 
-    // Redirect to login if not logged in
-    const token = localStorage.getItem('sp_token');
-    if (!token) window.location.href = 'log.html';
+    <div class="counter" id="b-counter">
+      <span>Progress</span>
+      <span>
+        <span class="cnt-done" id="cnt-done">0</span> done &nbsp;
+        <span class="cnt-fail" id="cnt-fail">0</span> failed &nbsp;
+        <span id="cnt-skip" style="color:var(--muted)">0</span> skipped
+      </span>
+    </div>
 
-    // --- Image toggle ---
-    let imgOn = false;
+    <div id="b-progress"></div>
+    <div class="status" id="b-status"></div>
+  </div>
+</div>
 
-    function toggleImg() {
-      imgOn = !imgOn;
-      document.getElementById('imgToggle').classList.toggle('on', imgOn);
-      document.getElementById('imgArea').classList.toggle('show', imgOn);
-      if (!imgOn) {
-        document.getElementById('imgFile').value = '';
-        document.getElementById('imgPreview').style.display = 'none';
-      }
+<script>
+  // =============================================
+  // API BASE URL — Change to your Render URL
+  // Example: https://studypoint-backend.onrender.com
+  // =============================================
+  const API_BASE = 'https://api-callstudy.onrender.com';
+
+  const token = localStorage.getItem('sp_token');
+  if (!token) window.location.href = 'log.html';
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['single','batch'][i] === name));
+    document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + name).classList.add('active');
+  }
+
+  function setStatus(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = 'status ' + type;
+    el.textContent = msg;
+  }
+
+  // ── SINGLE ──────────────────────────────────────────────────────────
+  let imgOn = false;
+  function toggleImg() {
+    imgOn = !imgOn;
+    document.getElementById('imgToggle').classList.toggle('on', imgOn);
+    document.getElementById('imgArea').classList.toggle('show', imgOn);
+    if (!imgOn) { document.getElementById('imgFile').value = ''; document.getElementById('imgPreview').style.display = 'none'; }
+  }
+  function onImgPick(input) {
+    const file = input.files[0]; if (!file) return;
+    const p = document.getElementById('imgPreview'); p.src = URL.createObjectURL(file); p.style.display = 'block';
+  }
+  function toBase64(file) {
+    return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = () => rej(); r.readAsDataURL(file); });
+  }
+
+  async function generate() {
+    const title = document.getElementById('title').value.trim();
+    const subject = document.getElementById('subject').value.trim();
+    const prompt = document.getElementById('prompt').value.trim();
+    const btn = document.getElementById('genBtn');
+    if (!title || !subject) { setStatus('s-status','error','Title and subject are required'); return; }
+    let body = { title, subject, prompt };
+    if (imgOn) {
+      const file = document.getElementById('imgFile').files[0];
+      if (file) { setStatus('s-status','loading','Reading image...'); body.imageBase64 = await toBase64(file); body.mimeType = file.type; }
     }
+    btn.disabled = true; btn.textContent = 'Generating...';
+    setStatus('s-status','loading','Sending to AI... up to 30 seconds.');
+    try {
+      const res = await fetch(API_BASE + '/api/generate', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + token}, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (res.status === 401) { localStorage.removeItem('sp_token'); window.location.href = 'log.html'; return; }
+      if (data.success) { setStatus('s-status','success','Saved!\nID: ' + data.noteId); document.getElementById('title').value=''; document.getElementById('subject').value=''; document.getElementById('prompt').value=''; }
+      else { setStatus('s-status','error', data.message); }
+    } catch { setStatus('s-status','error','Cannot reach server.'); }
+    finally { btn.disabled = false; btn.textContent = 'Generate Note'; }
+  }
 
-    // Show image preview after picking
-    function onImagePick(input) {
-      const file = input.files[0];
-      if (!file) return;
-      const prev = document.getElementById('imgPreview');
-      prev.src = URL.createObjectURL(file);
-      prev.style.display = 'block';
-    }
+  // ── BATCH ────────────────────────────────────────────────────────────
+  let cntDone = 0, cntFail = 0, cntSkip = 0;
 
-    // Convert image file to base64 string
-    function toBase64(file) {
-      return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result.split(',')[1]); // Remove "data:image/...;base64," prefix
-        r.onerror = () => rej(new Error('File read failed'));
-        r.readAsDataURL(file);
-      });
-    }
+  function updateCounters() {
+    document.getElementById('cnt-done').textContent = cntDone;
+    document.getElementById('cnt-fail').textContent = cntFail;
+    document.getElementById('cnt-skip').textContent = cntSkip;
+  }
 
-    // Set status message
-    function setStatus(type, msg) {
-      const el = document.getElementById('status');
-      el.className = `status ${type}`;
-      el.textContent = msg;
-    }
+  function updateProg(el, state, icon, msg) {
+    el.className = 'prog-item ' + state;
+    el.querySelector('.prog-icon').textContent = icon;
+    el.querySelector('.prog-msg').textContent = msg;
+  }
 
-    // --- Main generate function ---
-    async function generate() {
-      const title   = document.getElementById('title').value.trim();
-      const subject = document.getElementById('subject').value.trim();
-      const prompt  = document.getElementById('prompt').value.trim();
-      const btn     = document.getElementById('genBtn');
+  async function batchGenerate() {
+    const subject   = document.getElementById('b-subject').value.trim();
+    const titlesRaw = document.getElementById('b-titles').value;
+    if (!subject) { setStatus('b-status','error','Subject is required'); return; }
 
-      if (!title || !subject) {
-        setStatus('error', 'Title and subject are required');
-        return;
-      }
+    // Parse titles — one per line, skip blank lines
+    const titles = titlesRaw.split('\n').map(t => t.trim()).filter(t => t);
+    if (!titles.length) { setStatus('b-status','error','Enter at least one title'); return; }
 
-      // Build request body
-      let body = { title, subject, prompt };
+    // Build progress list
+    const progressEl = document.getElementById('b-progress');
+    progressEl.innerHTML = '';
+    cntDone = 0; cntFail = 0; cntSkip = 0;
 
-      // If image toggle is on, convert image to base64
-      if (imgOn) {
-        const fileInput = document.getElementById('imgFile');
-        const file = fileInput.files[0];
-        if (file) {
-          setStatus('loading', 'Reading image...');
-          body.imageBase64 = await toBase64(file);
-          body.mimeType    = file.type; // e.g. 'image/jpeg', 'image/png'
-        }
-      }
+    const items = titles.map(title => {
+      const div = document.createElement('div');
+      div.className = 'prog-item';
+      div.innerHTML = '<span class="prog-icon">&#9646;</span><div class="prog-info"><div class="prog-title">' + title + '</div><div class="prog-msg">Waiting...</div></div>';
+      progressEl.appendChild(div);
+      return div;
+    });
 
-      btn.disabled = true;
-      btn.textContent = '⏳ Generating...';
-      setStatus('loading', 'Sending to AI... This can take up to 30 seconds.');
+    document.getElementById('b-counter').classList.add('show');
+    updateCounters();
+    document.getElementById('b-status').className = 'status';
+
+    const btn = document.getElementById('b-btn');
+    btn.disabled = true;
+
+    let stoppedEarly = false;
+    let stopReason = '';
+
+    for (let i = 0; i < titles.length; i++) {
+      const title = titles[i];
+      const item  = items[i];
+
+      btn.textContent = 'Generating ' + (i + 1) + '/' + titles.length + '...';
+      updateProg(item, 'active', '⚡', 'Generating...');
+      item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       try {
-        const res = await fetch(`${API_BASE}/api/generate`, {
+        const res  = await fetch(API_BASE + '/api/generate', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // Send JWT with every protected request
-          },
-          body: JSON.stringify(body)
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ title, subject, prompt: '' })
         });
-
         const data = await res.json();
 
-        // Session expired → back to login
-        if (res.status === 401) {
-          localStorage.removeItem('sp_token');
-          window.location.href = 'log.html';
-          return;
-        }
+        if (res.status === 401) { localStorage.removeItem('sp_token'); window.location.href = 'log.html'; return; }
 
         if (data.success) {
-          setStatus('success', `✅ Note saved!\nID: ${data.noteId}`);
-          // Clear form after success
-          document.getElementById('title').value = '';
-          document.getElementById('subject').value = '';
-          document.getElementById('prompt').value = '';
-          document.getElementById('imgFile').value = '';
-          document.getElementById('imgPreview').style.display = 'none';
-          if (imgOn) toggleImg(); // Turn off image toggle
+          // Success — continue to next
+          updateProg(item, 'success', '✅', 'Saved — ID: ' + data.noteId);
+          cntDone++;
+
+        } else if (res.status === 409) {
+          // Title exists — skip and continue
+          updateProg(item, 'skipped', '⚠️', 'Skipped — ' + data.message);
+          cntSkip++;
+
         } else {
-          setStatus('error', `❌ ${data.message}`);
+          // Fatal error (API key, server) — stop here
+          updateProg(item, 'error', '❌', data.message || 'Server error');
+          cntFail++;
+          stoppedEarly = true;
+          stopReason = data.message || 'Server error';
+          break;
         }
 
       } catch {
-        setStatus('error', 'Cannot reach server. Check your connection.');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '✨ Generate Note';
+        // Network error — stop
+        updateProg(item, 'error', '❌', 'Network error — cannot reach server');
+        cntFail++;
+        stoppedEarly = true;
+        stopReason = 'Network error';
+        break;
       }
+
+      updateCounters();
     }
-  </script>
+
+    // Mark any remaining items as not started
+    items.forEach(el => {
+      if (el.classList.contains('active') || el.className === 'prog-item') {
+        updateProg(el, 'skipped', '⏭', 'Not started');
+        cntSkip++;
+      }
+    });
+    updateCounters();
+
+    // Final summary
+    if (!stoppedEarly) {
+      setStatus('b-status', 'success', 'Done!  ' + cntDone + ' generated,  ' + cntSkip + ' skipped (already existed).');
+    } else {
+      setStatus('b-status', 'error', 'Stopped at title ' + (cntDone + cntFail) + '/' + titles.length + '\nGenerated: ' + cntDone + '  |  Reason: ' + stopReason);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Generate All';
+  }
+</script>
 </body>
 </html>
